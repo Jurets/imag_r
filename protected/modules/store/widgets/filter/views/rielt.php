@@ -76,6 +76,7 @@
                         ), true);
                     ?>                    
                 </div><!-- slider-wrap -->
+
                 <div class="slider-wrap roof">
                     <?php $min = (int)floor($this->controller->minAttribute('roofarea'));
                           $max = (int)floor($this->controller->maxAttribute('roofarea')); ?>
@@ -95,19 +96,38 @@
                         ), true);
                     ?>                    
                 </div><!-- slider-wrap -->
+                
             </div><!-- folded -->
         </div><!-- folded-wrap -->
     </div><!-- filter -->
+    
     <div class="filter">
         <div class="folded-wrap">
             <span class="knob">Кол-во комнат</span>
-            <div class="folded">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tenetur, nihil, voluptas, tempora et soluta obcaecati quod nemo aperiam animi asperiores voluptatibus ex repellendus praesentium ducimus unde nesciunt mollitia ea possimus?
-                </p>
+            <div class="folded opened">
+                <div class="slider-wrap roof">
+                    <?php $min = (int)floor($this->controller->minAttribute('numberofbedrooms'));
+                          $max = (int)floor($this->controller->maxAttribute('numberofbedrooms')); ?>
+                    <p>Кол-во комнат от&nbsp;<span class="dynamic" id="roomCountMin"><?php echo $min ?></span> до&nbsp;<span class="dynamic" id="roomCountMax"><?php echo $max ?></span>.</p>
+                    <?php
+                        echo $this->widget('zii.widgets.jui.CJuiSlider', array(
+                            'options'=>array('range'=>true, 'min'=>$min, 'max'=>$max, 'disabled'=>false, 'values'=>array($min, $max),
+                                'change'=>'js: function( event, ui ) {
+                                    $("#roomCountMin").text(ui.values[0]);
+                                    $("#roomCountMax").text(ui.values[1]);
+                                }',
+                            ),
+                            'htmlOptions'=>array(
+                                'class'=>'slider',
+                                'style'=>'margin:5px',
+                            ),
+                        ), true);
+                    ?>                    
+                </div><!-- slider-wrap -->
             </div><!-- folded -->
         </div><!-- folded-wrap -->
     </div><!-- filter -->
+    
     <div class="filter">
         <div class="folded-wrap">
             <span class="knob active">Тип здания</span>
@@ -120,16 +140,34 @@
             </div><!-- folded -->
         </div><!-- folded-wrap -->
     </div><!-- filter -->
+    
     <div class="filter">
         <div class="folded-wrap">
             <span class="knob">Кол-во этажей</span>
-            <div class="folded">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tenetur, nihil, voluptas, tempora et soluta obcaecati quod nemo aperiam animi asperiores voluptatibus ex repellendus praesentium ducimus unde nesciunt mollitia ea possimus?
-                </p>
+            <div class="folded opened">
+                <div class="slider-wrap roof">
+                    <?php $min = (int)floor($this->controller->minAttribute('floorcount'));
+                          $max = (int)floor($this->controller->maxAttribute('floorcount')); ?>
+                    <p>Кол-во этажей от&nbsp;<span class="dynamic" id="floorCountMin"><?php echo $min ?></span> до&nbsp;<span class="dynamic" id="floorCountMax"><?php echo $max ?></span>.</p>
+                    <?php
+                        echo $this->widget('zii.widgets.jui.CJuiSlider', array(
+                            'options'=>array('range'=>true, 'min'=>$min, 'max'=>$max, 'disabled'=>false, 'values'=>array($min, $max),
+                                'change'=>'js: function( event, ui ) {
+                                    $("#floorCountMin").text(ui.values[0]);
+                                    $("#floorCountMax").text(ui.values[1]);
+                                }',
+                            ),
+                            'htmlOptions'=>array(
+                                'class'=>'slider',
+                                'style'=>'margin:5px',
+                            ),
+                        ), true);
+                    ?> 
+                </div><!-- slider-wrap -->                   
             </div><!-- folded -->
         </div><!-- folded-wrap -->
     </div><!-- filter -->
+    
     <div class="filter">
         <div class="folded-wrap">
             <span class="knob">Паркинг</span>

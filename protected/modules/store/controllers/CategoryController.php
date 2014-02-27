@@ -330,6 +330,11 @@ class CategoryController extends Controller
         else
             $cmd->order('value DESC');
         $result = $cmd->queryScalar(array(':attrname'=>$attrname));
+        //если атрибут типа выпадающий список - то выбираем значение по поолученному ИД
+        $attr = StoreAttribute::model()->findByAttributes(array('name'=>$attrname));
+        if ($attr->type == StoreAttribute::TYPE_DROPDOWN && ($option = StoreAttributeOption::model()->findByPk($result))) {
+            $result = $option->position;
+        }
         return $result;
     }    
     
