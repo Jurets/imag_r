@@ -56,7 +56,8 @@ if(!empty($active))
 			}',
 		),
 		'htmlOptions'=>array(
-			'style'=>'margin:5px',
+			'class'=>'slider',
+            'style'=>'margin:5px',
 		),
 	), true);
 ?>

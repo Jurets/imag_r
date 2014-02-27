@@ -50,8 +50,10 @@ return array(
 			'showScriptName'=>false,
 			'useStrictParsing'=>true,
 			'rules'=>array(
-				'/'=>'store/index/index',
-				'admin/auth'=>'admin/auth',
+                '/'=>'store/index/index',
+			//	'/'=>'store/category/view/kompyuteri',
+	
+    			'admin/auth'=>'admin/auth',
 				'admin/auth/logout'=>'admin/auth/logout',
 				'admin/<module:\w+>'=>'<module>/admin/default',
 				'admin/<module:\w+>/<controller:\w+>'=>'<module>/admin/<controller>',

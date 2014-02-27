@@ -9,7 +9,7 @@
  */
 class CategoryController extends Controller
 {
-
+    public $layout = '//layouts/main';
 	/**
 	 * @var StoreProduct
 	 */
@@ -83,9 +83,16 @@ class CategoryController extends Controller
 	 */
 	public function actionView()
 	{
-		$this->model = $this->_loadModel(Yii::app()->request->getQuery('url'));
+		$url = Yii::app()->request->getQuery('url');
+        $url = empty($url) ? 'kompyuteri' : $url;
+        $this->model = $this->_loadModel($url);
 		$view = $this->setDesign($this->model, 'view');
-		$this->doSearch($this->model, $view);
+		if (Yii::app()->request->isAjaxRequest) {//DebugBreak();
+            $subitems = isset($_REQUEST['sub']) ? $_REQUEST['sub'] : array();
+        } else {
+            $subitems = array();
+        }
+        $this->doSearch($this->model, $view, $subitems/*, array(234)*/);
 	}
 
 	/**
@@ -106,17 +113,17 @@ class CategoryController extends Controller
 	 * @param $data StoreCategory|string
 	 * @param string $view
 	 */
-	public function doSearch($data, $view)
+	public function doSearch($data, $view, $subitems = array())
 	{
 		$this->query = new StoreProduct(null);
 		$this->query->attachBehaviors($this->query->behaviors());
-		$this->query->applyAttributes($this->activeAttributes)
-			->active();
-
-		if($data instanceof StoreCategory)
+		$this->query->applyAttributes($this->activeAttributes)->active();
+        
+		if (!empty($subitems)) {
+            $this->query->applyCategories($subitems);
+        } else if($data instanceof StoreCategory)
 			$this->query->applyCategories($this->model);
-		else
-		{
+		else {
 			$cr=new CDbCriteria;
 			$cr->with = array(
 				'translate'=>array('together'=>true),
@@ -153,10 +160,15 @@ class CategoryController extends Controller
 
 		$this->provider->sort = StoreProduct::getCSort();
 
-		$this->render($view, array(
-			'provider'=>$this->provider,
-			'itemView'=>(isset($_GET['view']) && $_GET['view']==='wide') ? '_product_wide' : '_product'
-		));
+        if (Yii::app()->request->isAjaxRequest) {
+            $response = $this->renderPartial('results', array('provider'=>$this->provider), true);
+            echo CJSON::encode($response);
+        } else {
+            $this->render($view, array(
+                'provider'=>$this->provider,
+                'itemView'=>(isset($_GET['view']) && $_GET['view']==='wide') ? '_product_wide' : '_product'
+            ));
+        }
 	}
 
 	/**
@@ -234,7 +246,6 @@ class CategoryController extends Controller
 	 */
 	public function getMaxPrice()
 	{
-
 		$this->_maxPrice=$this->aggregatePrice('MAX');
 		return $this->_maxPrice;
 	}
@@ -300,4 +311,35 @@ class CategoryController extends Controller
 
 		return $model;
 	}
+    
+    /**
+    * агрегирование по атрибуту (минимум, максимум)
+    * 
+    * @param mixed $attrname
+    * @param mixed $function
+    */
+    public function aggregateAttribute($attrname, $function = 'MIN')
+    {
+        $product = New StoreProduct();
+        $cmd = Yii::app()->db->createCommand()
+            ->select($function.'(cast(`value` as SIGNED)) as aggregation_value')
+            ->from($product->tableName)
+            ->where('attribute = :attrname');
+        if($function==='MIN')
+            $cmd->order('value ASC');
+        else
+            $cmd->order('value DESC');
+        $result = $cmd->queryScalar(array(':attrname'=>$attrname));
+        return $result;
+    }    
+    
+    public function minAttribute($attrname)
+    {
+        return $this->aggregateAttribute($attrname, 'MIN');
+    }
+    public function maxAttribute($attrname)
+    {
+        return $this->aggregateAttribute($attrname, 'MAX');
+    }
+    
 }
